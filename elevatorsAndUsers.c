@@ -156,7 +156,6 @@ int main(int argc, char** argv){
    {
      pthread_join(elevator_t[i], NULL);
    }
-=======
 void* userInput(void *vargp){
 
   pthread_mutex_lock(&lock);
