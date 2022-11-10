@@ -57,7 +57,7 @@ void check_elevator(int elevator){
 }
  
 // function to control elevator movement
-void userInput(void *vargp){
+void userInput(){
  
  pthread_mutex_lock(&lock);
  
@@ -65,48 +65,79 @@ void userInput(void *vargp){
  for(int i = 0; i < users_waiting; i++){
    printf( "\nWhich floor is user %d going to?\n", i+1);
    scanf("%d", &users[i].destination_floor);
+
+   //make sure that the floor choice is not greater 8 floors
+   if(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+    printf("We dont have that floor in this building");
+    exit(0);
+   }
  }
- 
- // pthread_mutex_unlock(&lock);
+ int size = 9;
+  //aranging the destination floor in ascending order
+  for (int i = 0; i < users_waiting; ++i)
+        {
+            for (int j = i + 1; j < users_waiting; ++j)
+            {
+                if (users[i].destination_floor > users[j].destination_floor)
+                {
+                    int a =  users[i].destination_floor;
+                    users[i].destination_floor = users[j].destination_floor;
+                    users[j].destination_floor = a;
+                }
+            }
+            //removing duplicate values in the elevator
+            for( int j = i + 1;  j < users_waiting; j++){
+              if(users[i].destination_floor == users[j].destination_floor){
+                for(int k = j; k < size - 1; k++){
+                  users[k].destination_floor = users[k + 1].destination_floor;
+                }
+                users_waiting--;
+                j--;
+              }
+            }
+        }
+//   // testing to see if the floor destination are arranged in ascending order.
+//  for (int i = 0; i < 9; i++)
+//  printf("the floor is %d\n", users[i].destination_floor);
+
+
+
+ pthread_mutex_unlock(&lock);
  }
-//
+
+
+
 // function to control user movement
 void elevatorMvmt(int elevator){
  pthread_mutex_lock(&lock);
  for(int i = 0; i < 2; i++)
  printf("elevator %d is  currently on floor %d\n", elevator, elevators[i].current_floor);
- //aranging the destination floor in ascending order
- for (int i = 0; i < 5; ++i)
-       {
-           for (int j = i + 1; j < 5; ++j)
-           {
-               if (users[i].destination_floor > users[j].destination_floor)
-               {
-                   int a =  users[i].destination_floor;
-                   users[i].destination_floor = users[j].destination_floor;
-                   users[j].destination_floor = a;
-               }
-           }
-       }
- 
+
+
 // Going to specific floor
 for( int i ; i < 5; i++){
  printf("Elevator going to floor %d\n", users[i].destination_floor);
  sleep(2*users[i].destination_floor);
  printf("Elevator has arrived at floor %d\n", users[i].destination_floor);
- printf("Elevator waits for 2 seconds for user to alight\n");
+ printf("Elevator has stopped for 2 seconds for user to alight\n");
  sleep(2);
+ if(users[i].destination_floor == 0){
+  printf("All users have alighted");
+  exit(0);
+ }
 }
-pthread_mutex_unlock(&lock);
+// pthread_mutex_unlock(&lock);
 }
+
  
 int main(int argc, char** argv){
  
  init_user(users_waiting);
  
- pthread_t user_t[users_waiting];
- for(size_t i=0;i<users_waiting;i++)  {
-   pthread_create(&user_t[i],NULL,userInput,(void*)i);
+ // Creating a thread for each user
+ pthread_t user_t;
+ for(size_t i=0;i < 1;i++)  {
+   pthread_create(&user_t,NULL,userInput,(void*)i);
  }
  
  init_elevator();
@@ -116,9 +147,9 @@ int main(int argc, char** argv){
    pthread_create(&elevator_t[i],NULL,elevatorMvmt,(void*)i);
  }
  
- for(int i = 0; i < users_waiting; i++)
+ for(int i = 0; i < 1; i++)
    {
-     pthread_join(user_t[i], NULL);
+     pthread_join(user_t, NULL);
    }
  
  for(int i = 0; i < 2; i++)
