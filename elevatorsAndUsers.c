@@ -9,6 +9,11 @@ int users_allowed;
 int extra_users;
 pthread_mutex_t lock;
 
+//Users alighting in a specific floor
+static struct floors{
+  int userno;
+}floors[15];
+
 // A user struct to hold user information
 static struct user{
   pthread_barrier_t barrier;
@@ -43,7 +48,7 @@ void init_user(int elevator){
   int i;
 
   //Getting the number of people waiting outside and storing it in the user_waiting variable
-  printf("How many people are waiting outside elevator %d\n", elevator);
+  printf("How many people are waiting outside elevator A :\n");
   scanf("%d", &users_waiting);
 
   // A loop where the barrier for each user
@@ -69,25 +74,8 @@ void check_elevator(int elevator){
   }
 }
 
-// function to control elevator movement
-void userInput(){
-  pthread_mutex_lock(&lock);
-  check_elevator(elevator);
-
-  printf("users waiting outside elevator A = %d",users_allowed); //checking code.
-  for(int i = 0; i < users_allowed; i++){
-    printf( "\nWhich floor is user %d going to?\n", i+1);
-    scanf("%d", &users[i].destination_floor);
-
-    //make sure that the floor choice is not greater 8 floors
-      while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
-        printf("We dont have that floor in this building only 0- 8 \n");
-        printf("Try again");
-        printf( "\nWhich floor is user %d going to?\n", i+1);
-        scanf("%d", &users[i].destination_floor);
-
-      }
-  }
+//function to remove duplicate and arrange in ascending order
+void ascendingAndDuplicate(){
   int size = 9;
   //aranging the destination floor in ascending order
   for (int i = 0; i < users_allowed; ++i)
@@ -102,16 +90,56 @@ void userInput(){
             }
         }
       //removing duplicate values in the elevator
-      for( int j = i + 1;  j < users_allowed; j++){
+      int increment = 1;
+      for( int j = i + 1;  j < users_allowed + 1; j++){
         if(users[i].destination_floor == users[j].destination_floor){
-          for(int k = j; k < size - 1; k++){
+
+            floors[users[i].destination_floor].userno = ++increment; // recording the number of users in a particular floor
+
+          for(int k = j; k < size + 1; k++){
             users[k].destination_floor = users[k + 1].destination_floor;
           }
           users_allowed--;
           j--;
         }
+        else{
+            
+              floors[users[i].destination_floor].userno = increment;
+
+           }
       }
     }
+
+}
+
+
+// function to control elevator movement
+void userInput(){
+  pthread_mutex_lock(&lock);
+  check_elevator(elevator);
+
+  printf("users waiting outside elevator A = %d\n",users_allowed); //checking code.
+  printf("Extra users will automatically use elevator B\n");
+
+  for(int i = 0; i < users_allowed; i++){
+    printf( "\nWhich floor is user %d going to?\n", i+1);
+    scanf("%d", &users[i].destination_floor);
+
+    //make sure that the floor choice is not greater 8 floors
+      while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+        printf("We dont have that floor in this building only 0- 8 \n");
+        printf("Try again");
+        printf( "\nWhich floor is user %d going to?\n", i+1);
+        scanf("%d", &users[i].destination_floor);
+
+      }
+  }
+  
+
+    //function to remove duplicate and arrange in ascending order
+    ascendingAndDuplicate();
+
+
   //removing the mutex lock
   pthread_mutex_unlock(&lock);
   if(extra_users > 0){
@@ -130,30 +158,9 @@ void userInput(){
 
       }
     }
-    int size = 9;
-    //aranging the destination floor in ascending order
-    for (int i = 0; i < extra_users; ++i)
-      {
-        for (int j = i + 1; j < extra_users; ++j)
-          {
-            if (users[i].destination_floor > users[j].destination_floor)
-              {
-                int a =  users[i].destination_floor;
-                users[i].destination_floor = users[j].destination_floor;
-                users[j].destination_floor = a;
-              }
-          }
-        //removing duplicate values in the elevator
-        for( int j = i + 1;  j < extra_users; j++){
-          if(users[i].destination_floor == users[j].destination_floor){
-            for(int k = j; k < size - 1; k++){
-              users[k].destination_floor = users[k + 1].destination_floor;
-            }
-            extra_users--;
-            j--;
-          }
-        }
-      }
+    //function to remove duplicate and arrange in ascending order
+    ascendingAndDuplicate();
+
     pthread_mutex_unlock(&lock);
   }
 }
@@ -163,7 +170,7 @@ void elevatorMvmt(int elevator){
   int count = 0;
   
   pthread_mutex_lock(&lock);
-  printf("elevator A is  currently on floor %d\n", elevators[elevator].current_floor);
+  printf("\nelevator A is  currently on floor %d\n", elevators[elevator].current_floor);
   // Going to specific floor
   for( int i ; i < 5; i++){
     if(users[i].destination_floor == 0){
@@ -172,11 +179,17 @@ void elevatorMvmt(int elevator){
       exit(0);
     }
     //Outputting elevator status to the user
-    printf("Elevator A going to floor %d\n", users[i].destination_floor);
+    printf("Elevator A going to floor %d \n", users[i].destination_floor);
+    
+
     sleep(2*users[i].destination_floor);
-    printf("Elevator A has arrived at floor %d\n", users[i].destination_floor);
-    printf("Elevator A has stopped for 2 seconds for user to alight\n");
+
+    printf("Elevator A has arrived at floor %d and %d users have alighted\n", 
+    users[i].destination_floor,floors[users[i].destination_floor].userno);
+    printf("Elevator has %d users currently\n", (users_allowed - floors[users[i].destination_floor].userno));
+    printf("Elevator A has stopped for 2 seconds for user to alight\n\n");
     sleep(2);
+    
     count++;
     //Making sure all users have alighted from the elevator
     if(count == users_allowed){
@@ -198,9 +211,12 @@ void elevatorMvmt(int elevator){
     }
       printf("Elevator B going to floor %d\n", users[i].destination_floor);
       sleep(2*users[i].destination_floor);
-      printf("Elevator B has arrived at floor %d\n", users[i].destination_floor);
+      printf("Elevator B has arrived at floor %d and %d users have alighted\n", 
+    users[i].destination_floor,floors[users[i].destination_floor].userno);
+      printf("Elevator B has %d users currently", (extra_users - floors[users[i].destination_floor].userno));
       printf("Elevator B has stopped for 2 seconds for user to alight\n");
       sleep(2);
+      
       count++;
       // Making sure all users have alighted
       if(count == extra_users){
