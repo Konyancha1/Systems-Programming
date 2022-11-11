@@ -74,7 +74,7 @@ void userInput(){
   pthread_mutex_lock(&lock);
   check_elevator(elevator);
 
-  // printf("users waiting outside elevator 0 = %d",users_allowed); //checking code.
+  printf("users waiting outside elevator A = %d",users_allowed); //checking code.
   for(int i = 0; i < users_allowed; i++){
     printf( "\nWhich floor is user %d going to?\n", i+1);
     scanf("%d", &users[i].destination_floor);
@@ -116,7 +116,7 @@ void userInput(){
   pthread_mutex_unlock(&lock);
   if(extra_users > 0){
     pthread_mutex_lock(&lock);
-    printf("\n\nUsers waiting outside elevator 1: %d \n", extra_users);
+    printf("\n\nUsers waiting outside elevator B: %d \n", extra_users);
     for(int i = 0; i < extra_users; i++){
       printf( "\nWhich floor is user %d going to?\n", i+1);
       scanf("%d", &users[i].destination_floor);
@@ -163,19 +163,19 @@ void elevatorMvmt(int elevator){
   int count = 0;
   
   pthread_mutex_lock(&lock);
-  printf("elevator %d is  currently on floor %d\n", elevator, elevators[elevator].current_floor);
+  printf("elevator A is  currently on floor %d\n", elevators[elevator].current_floor);
   // Going to specific floor
   for( int i ; i < 5; i++){
     if(users[i].destination_floor == 0){
       printf("There is nobody in the elevator\n");
-      printf("Elevator in standby mode\n");
+      printf("Elevator A in standby mode\n");
       exit(0);
     }
     //Outputting elevator status to the user
-    printf("Elevator going to floor %d\n", users[i].destination_floor);
+    printf("Elevator A going to floor %d\n", users[i].destination_floor);
     sleep(2*users[i].destination_floor);
-    printf("Elevator has arrived at floor %d\n", users[i].destination_floor);
-    printf("Elevator has stopped for 2 seconds for user to alight\n");
+    printf("Elevator A has arrived at floor %d\n", users[i].destination_floor);
+    printf("Elevator A has stopped for 2 seconds for user to alight\n");
     sleep(2);
     count++;
     //Making sure all users have alighted from the elevator
@@ -188,18 +188,18 @@ void elevatorMvmt(int elevator){
   if(extra_users > 0){
     int count = 0;
     pthread_mutex_lock(&lock);
-    printf("elevator %d is  currently on floor %d\n", elevator+1, elevators[elevator].current_floor);
+    printf("elevator B is  currently on floor %d\n", elevators[elevator].current_floor);
     // Going to specific floor
     for( int i ; i < 5; i++){
       if(users[i].destination_floor == 0){
       printf("There is nobody in the elevator\n");
-      printf("Elevator in standby mode\n");
+      printf("Elevator B in standby mode\n");
       exit(0);
     }
-      printf("Elevator going to floor %d\n", users[i].destination_floor);
+      printf("Elevator B going to floor %d\n", users[i].destination_floor);
       sleep(2*users[i].destination_floor);
-      printf("Elevator has arrived at floor %d\n", users[i].destination_floor);
-      printf("Elevator has stopped for 2 seconds for user to alight\n");
+      printf("Elevator B has arrived at floor %d\n", users[i].destination_floor);
+      printf("Elevator B has stopped for 2 seconds for user to alight\n");
       sleep(2);
       count++;
       // Making sure all users have alighted
