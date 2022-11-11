@@ -48,7 +48,7 @@ void init_user(int elevator){
 }
 
 void check_elevator(int elevator){
-  if(elevators[elevator].passengers > 5 && elevators[elevator].passengers < 10){
+  if(elevators[elevator].passengers > 5 && elevators[elevator].passengers <= 10){
     extra_users = (elevators[elevator].passengers)- 5;
     users_allowed = users_waiting - extra_users;
   }
@@ -72,13 +72,13 @@ void userInput(){
     scanf("%d", &users[i].destination_floor);
 
     //make sure that the floor choice is not greater 8 floors
-  while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
-    printf("We dont have that floor in this building only 0- 8 \n");
-    printf("Try again");
-    printf( "\nWhich floor is user %d going to?\n", i+1);
-    scanf("%d", &users[i].destination_floor);
+      while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+        printf("We dont have that floor in this building only 0- 8 \n");
+        printf("Try again");
+        printf( "\nWhich floor is user %d going to?\n", i+1);
+        scanf("%d", &users[i].destination_floor);
 
-  }
+      }
   }
   int size = 9;
   //aranging the destination floor in ascending order
@@ -113,13 +113,13 @@ void userInput(){
       scanf("%d", &users[i].destination_floor);
 
       //make sure that the floor choice is not greater 8 floors
-    while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
-      printf("We dont have that floor in this building only 0- 8 \n");
-      printf("Try again");
-      printf( "\nWhich floor is user %d going to?\n", i+1);
-      scanf("%d", &users[i].destination_floor);
+      while(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+        printf("We dont have that floor in this building only 0- 8 \n");
+        printf("Try again");
+        printf( "\nWhich floor is user %d going to?\n", i+1);
+        scanf("%d", &users[i].destination_floor);
 
-   }
+      }
     }
     int size = 9;
     //aranging the destination floor in ascending order
@@ -170,7 +170,7 @@ void elevatorMvmt(int elevator){
   if(extra_users > 0){
     int count = 0;
     pthread_mutex_lock(&lock);
-    printf("elevator %d is  currently on floor %d\n", elevator, elevators[elevator].current_floor);
+    printf("elevator %d is  currently on floor %d\n", elevator+1, elevators[elevator].current_floor);
     // Going to specific floor
     for( int i ; i < 5; i++){
       printf("Elevator going to floor %d\n", users[i].destination_floor);
@@ -205,7 +205,7 @@ int main(int argc, char** argv){
   init_elevator();
 
   pthread_t elevator_t[2];
-  for(size_t i=0;i<2;i++) {
+  for(size_t i=0;i<1;i++) {
     pthread_create(&elevator_t[i],NULL,elevatorMvmt,(void*)i);
   }
 
