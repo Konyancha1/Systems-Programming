@@ -47,8 +47,11 @@ void init_elevator(){
 void init_user(int elevator){
   int i;
 
-  //Getting the number of people waiting outside and storing it in the user_waiting variable
+  //Getting the number of people waiting outside and storing it in the user_waiting variable we
   printf("How many people are waiting outside elevator A :\n");
+
+  printf("How many people are waiting outside elevator A\n");
+
   scanf("%d", &users_waiting);
 
   // A loop where the barrier for each user
