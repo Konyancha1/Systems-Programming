@@ -48,7 +48,7 @@ void init_user(int elevator){
 }
 
 void check_elevator(int elevator){
-  if(elevators[elevator].passengers > 5 && elevators[elevator].passengers < 10){
+  if(elevators[elevator].passengers > 5 && elevators[elevator].passengers <= 10){
     extra_users = (elevators[elevator].passengers)- 5;
     users_allowed = users_waiting - extra_users;
   }
