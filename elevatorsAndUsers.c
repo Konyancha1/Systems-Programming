@@ -79,6 +79,12 @@ void userInput(){
         scanf("%d", &users[i].destination_floor);
 
       }
+
+    //make sure that the floor choice is not greater 8 floors
+    if(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+      printf("We dont have that floor in this building");
+      exit(0);
+    }
   }
   int size = 9;
   //aranging the destination floor in ascending order
@@ -119,6 +125,9 @@ void userInput(){
         printf( "\nWhich floor is user %d going to?\n", i+1);
         scanf("%d", &users[i].destination_floor);
 
+      if(users[i].destination_floor > 8 || users[i].destination_floor < 0){
+        printf("We dont have that floor in this building");
+        exit(0);
       }
     }
     int size = 9;
