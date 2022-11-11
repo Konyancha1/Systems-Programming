@@ -186,7 +186,7 @@ void elevatorMvmt(int elevator){
 
     printf("Elevator A has arrived at floor %d and %d users have alighted\n", 
     users[i].destination_floor,floors[users[i].destination_floor].userno);
-    printf("Elevator has %d users currently\n", (users_allowed - floors[users[i].destination_floor].userno));
+    
     printf("Elevator A has stopped for 2 seconds for user to alight\n\n");
     sleep(2);
     
@@ -213,7 +213,7 @@ void elevatorMvmt(int elevator){
       sleep(2*users[i].destination_floor);
       printf("Elevator B has arrived at floor %d and %d users have alighted\n", 
     users[i].destination_floor,floors[users[i].destination_floor].userno);
-      printf("Elevator B has %d users currently", (extra_users - floors[users[i].destination_floor].userno));
+      
       printf("Elevator B has stopped for 2 seconds for user to alight\n");
       sleep(2);
       
